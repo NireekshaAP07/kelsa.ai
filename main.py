@@ -32,7 +32,7 @@ MEMORY_FILE = BASE_DIR / "memory_store.json"
 USERS_FILE = BASE_DIR / "users.json"
 
 HINDSIGHT_BASE_URL = os.getenv("HINDSIGHT_BASE_URL", "https://api.hindsight.vectorize.io")
-HINDSIGHT_API_KEY = os.getenv("HINDSIGHT_API_KEY", "hsk_538ca0b5afd27305ff5bfcf1b9fccd26_af2d4435b1d25c5a")
+HINDSIGHT_API_KEY = os.getenv("HINDSIGHT_API_KEY", "")
 HINDSIGHT_ENABLED = os.getenv("HINDSIGHT_ENABLED", "").lower() in {"1", "true", "yes"}
 SESSION_COOKIE_NAME = "kelsa_session"
 SESSION_SECRET = os.getenv("SESSION_SECRET", "dev-only-change-me")
