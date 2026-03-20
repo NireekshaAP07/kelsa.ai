@@ -19,6 +19,9 @@ from fastapi.responses import FileResponse
 from itsdangerous import BadSignature, URLSafeSerializer
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr, Field
+from dotenv import load_dotenv
+
+load_dotenv()
 
 try:
     from hindsight_client import Hindsight  # type: ignore
