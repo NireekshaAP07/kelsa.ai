@@ -549,7 +549,7 @@ def current_user(current_user: StoredUser = Depends(get_current_user)) -> dict[s
 
 
 @app.post("/api/skills/add")
-def add_skill(skill: SkillInput) -> dict[str, str]:
+def add_skill(skill: SkillInput, current_user: StoredUser = Depends(get_current_user)) -> dict[str, str]:
     content = (
         f"Skill added: {skill.name} at {skill.level} level."
         + (f" Notes: {skill.notes}" if skill.notes else "")
@@ -557,30 +557,33 @@ def add_skill(skill: SkillInput) -> dict[str, str]:
     retain(
         content=content,
         context=f"User logged a skill: {skill.name}",
-        tags=["user:default", "topic:skills"],
-        doc_id=f"skill-{skill.name.lower().replace(' ', '-')}",
+        tags=[get_user_tag(current_user), "topic:skills"],
+        doc_id=f"{current_user.id}-skill-{skill.name.lower().replace(' ', '-')}",
     )
     local_store.add(
         "skills",
         {"name": skill.name, "level": skill.level, "notes": skill.notes, "content": content},
+        user_id=current_user.id,
     )
     return {"status": "saved", "message": f"Skill '{skill.name}' remembered!"}
 
 
 @app.get("/api/skills/summary")
-def skills_summary() -> dict[str, Any]:
+def skills_summary(current_user: StoredUser = Depends(get_current_user)) -> dict[str, Any]:
     memories = recall(
+        current_user,
         "What skills has the user learned and at what level?",
         types=["observation", "world", "experience"],
     )
     answer = reflect(
+        current_user,
         "List all the skills this user has learned, with their proficiency levels. Format as a structured summary."
     )
     return {"memories": memories, "summary": answer}
 
 
 @app.post("/api/projects/add")
-def add_project(project: ProjectInput) -> dict[str, str]:
+def add_project(project: ProjectInput, current_user: StoredUser = Depends(get_current_user)) -> dict[str, str]:
     content = (
         f"Project built: '{project.title}'. "
         f"Description: {project.description}. "
@@ -590,8 +593,8 @@ def add_project(project: ProjectInput) -> dict[str, str]:
     retain(
         content=content,
         context=f"User added a project to their portfolio: {project.title}",
-        tags=["user:default", "topic:projects"],
-        doc_id=f"project-{project.title.lower().replace(' ', '-')[:40]}",
+        tags=[get_user_tag(current_user), "topic:projects"],
+        doc_id=f"{current_user.id}-project-{project.title.lower().replace(' ', '-')[:40]}",
     )
     local_store.add(
         "projects",
@@ -602,14 +605,16 @@ def add_project(project: ProjectInput) -> dict[str, str]:
             "url": project.url,
             "content": content,
         },
+        user_id=current_user.id,
     )
     return {"status": "saved", "message": f"Project '{project.title}' added to your portfolio memory!"}
 
 
 @app.get("/api/projects/summary")
-def projects_summary() -> dict[str, Any]:
-    memories = recall("What projects has the user built?", types=["observation", "world", "experience"])
+def projects_summary(current_user: StoredUser = Depends(get_current_user)) -> dict[str, Any]:
+    memories = recall(current_user, "What projects has the user built?", types=["observation", "world", "experience"])
     answer = reflect(
+        current_user,
         "Summarize all projects this user has built. For each project, mention the title, "
         "what it does, and the tech stack used."
     )
@@ -617,7 +622,7 @@ def projects_summary() -> dict[str, Any]:
 
 
 @app.post("/api/applications/add")
-def add_application(app_input: ApplicationInput) -> dict[str, str]:
+def add_application(app_input: ApplicationInput, current_user: StoredUser = Depends(get_current_user)) -> dict[str, str]:
     content = (
         f"Internship application: {app_input.role} at {app_input.company}. "
         f"Status: {app_input.status}. Applied on: {app_input.date_applied}."
@@ -626,8 +631,8 @@ def add_application(app_input: ApplicationInput) -> dict[str, str]:
     retain(
         content=content,
         context=f"User logged an internship application to {app_input.company}",
-        tags=["user:default", "topic:applications"],
-        doc_id=f"app-{app_input.company.lower().replace(' ', '-')}-{app_input.role.lower().replace(' ', '-')[:20]}",
+        tags=[get_user_tag(current_user), "topic:applications"],
+        doc_id=f"{current_user.id}-app-{app_input.company.lower().replace(' ', '-')}-{app_input.role.lower().replace(' ', '-')[:20]}",
     )
     local_store.add(
         "applications",
@@ -639,17 +644,20 @@ def add_application(app_input: ApplicationInput) -> dict[str, str]:
             "notes": app_input.notes,
             "content": content,
         },
+        user_id=current_user.id,
     )
     return {"status": "saved", "message": f"Application to {app_input.company} tracked!"}
 
 
 @app.get("/api/applications/summary")
-def applications_summary() -> dict[str, Any]:
+def applications_summary(current_user: StoredUser = Depends(get_current_user)) -> dict[str, Any]:
     memories = recall(
+        current_user,
         "What internships has the user applied to and what are the statuses?",
         types=["observation", "world", "experience"],
     )
     answer = reflect(
+        current_user,
         "Give a full summary of all internship applications this user has made. "
         "Include company, role, status, and any patterns you notice (e.g. which stages they keep reaching, "
         "which types of roles they target). Be honest about patterns."
@@ -658,7 +666,7 @@ def applications_summary() -> dict[str, Any]:
 
 
 @app.post("/api/resume/analyze")
-def analyze_resume(resume: ResumeInput) -> dict[str, str]:
+def analyze_resume(resume: ResumeInput, current_user: StoredUser = Depends(get_current_user)) -> dict[str, str]:
     content = (
         f"User's resume/profile:\n{resume.resume_text}"
         + (f"\nTarget role: {resume.target_role}" if resume.target_role else "")
@@ -666,8 +674,8 @@ def analyze_resume(resume: ResumeInput) -> dict[str, str]:
     retain(
         content=content,
         context="User submitted their resume for analysis",
-        tags=["user:default", "topic:resume"],
-        doc_id="resume-latest",
+        tags=[get_user_tag(current_user), "topic:resume"],
+        doc_id=f"{current_user.id}-resume-latest",
     )
     local_store.add(
         "resume",
@@ -676,6 +684,7 @@ def analyze_resume(resume: ResumeInput) -> dict[str, str]:
             "target_role": resume.target_role,
             "content": content,
         },
+        user_id=current_user.id,
     )
 
     target_clause = f"The user is targeting: {resume.target_role}. " if resume.target_role else ""
@@ -690,20 +699,21 @@ def analyze_resume(resume: ResumeInput) -> dict[str, str]:
         "Be direct and specific, not generic."
     )
 
-    return {"analysis": reflect(query)}
+    return {"analysis": reflect(current_user, query)}
 
 
 @app.post("/api/chat")
-def chat(chat_input: ChatInput) -> dict[str, str]:
+def chat(chat_input: ChatInput, current_user: StoredUser = Depends(get_current_user)) -> dict[str, str]:
     content = f"User asked: {chat_input.message}"
     retain(
         content=content,
         context="Career advisor chat interaction",
-        tags=["user:default", "topic:chat"],
+        tags=[get_user_tag(current_user), "topic:chat"],
     )
-    local_store.add("chat", {"message": chat_input.message, "content": content})
+    local_store.add("chat", {"message": chat_input.message, "content": content}, user_id=current_user.id)
 
     answer = reflect(
+        current_user,
         f"The user asked: '{chat_input.message}'. "
         "Answer as a knowledgeable career advisor who knows this user's full history — "
         "their skills, projects, applications, and goals. Be specific and personal, not generic."
@@ -712,8 +722,9 @@ def chat(chat_input: ChatInput) -> dict[str, str]:
 
 
 @app.get("/api/dashboard")
-def dashboard() -> dict[str, str]:
+def dashboard(current_user: StoredUser = Depends(get_current_user)) -> dict[str, str]:
     answer = reflect(
+        current_user,
         "Give a concise career dashboard summary for this user. Cover: "
         "1) Top skills they have. "
         "2) Notable projects. "
