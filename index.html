@@ -630,7 +630,7 @@
       </button>
       <div class="memory-status">
         <div class="memory-dot"></div>
-        <span>Hindsight memory live</span>
+        <span id="memory-status-text">Checking memory mode…</span>
       </div>
     </div>
   </nav>
@@ -1035,6 +1035,20 @@ function setAuthUi() {
   });
 }
 
+async function loadRuntimeStatus() {
+  const memoryStatusText = document.getElementById('memory-status-text');
+  try {
+    const result = await api('/api/status', 'GET', null, { quietUnauthorized: true });
+    if (result.memory_mode === 'hindsight') {
+      memoryStatusText.textContent = 'Hindsight memory live';
+      return;
+    }
+    memoryStatusText.textContent = 'Local JSON memory mode';
+  } catch (_) {
+    memoryStatusText.textContent = 'Memory status unavailable';
+  }
+}
+
 function ensureAuthenticated() {
   if (authState.authenticated) return true;
   navigate('auth');
@@ -1385,6 +1399,7 @@ function addTypingIndicator() {
 // Set today's date on date picker
 document.getElementById('app-date').valueAsDate = new Date();
 setAuthUi();
+loadRuntimeStatus();
 restoreSession();
 </script>
 </body>

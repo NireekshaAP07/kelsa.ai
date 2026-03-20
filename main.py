@@ -14,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, List, Optional
 
-from fastapi import Cookie, Depends, FastAPI, HTTPException, Response, status
+from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Response, status
 from fastapi.responses import FileResponse
 from itsdangerous import BadSignature, URLSafeSerializer
 from passlib.context import CryptContext
@@ -45,6 +45,7 @@ SESSION_SECRET = os.getenv("SESSION_SECRET", "dev-only-change-me")
 SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "").lower() in {"1", "true", "yes"}
 SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "lax").lower()
 SESSION_COOKIE_MAX_AGE = int(os.getenv("SESSION_COOKIE_MAX_AGE", str(60 * 60 * 24 * 7)))
+AUTOMATION_API_KEY = os.getenv("AUTOMATION_API_KEY", "")
 BANK_ID = "career-advisor-bank"
 
 
@@ -76,6 +77,36 @@ class ResumeInput(BaseModel):
 
 class ChatInput(BaseModel):
     message: str
+
+
+class AutomationActor(BaseModel):
+    source: str = "n8n"
+
+
+class N8NMemoryUpsertInput(BaseModel):
+    email: EmailStr
+    kind: str = Field(description="skills, projects, applications, resume, or chat")
+    payload: dict[str, Any]
+
+
+class N8NAdvisorPromptInput(BaseModel):
+    email: EmailStr
+    message: str = Field(min_length=1, max_length=4000)
+
+
+class N8NApplicationInput(BaseModel):
+    email: EmailStr
+    company: str
+    role: str
+    status: str
+    date_applied: str
+    notes: Optional[str] = ""
+
+
+class N8NResumeAnalysisInput(BaseModel):
+    email: EmailStr
+    resume_text: str
+    target_role: Optional[str] = ""
 
 
 class UserCreateInput(BaseModel):
@@ -350,8 +381,34 @@ def get_current_user(session_token: Optional[str] = Cookie(default=None, alias=S
     return user
 
 
+def require_automation_api_key(x_automation_key: Optional[str] = Header(default=None)) -> AutomationActor:
+    if not AUTOMATION_API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Automation API key is not configured.",
+        )
+
+    if x_automation_key != AUTOMATION_API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid automation API key.",
+        )
+
+    return AutomationActor()
+
+
 def get_user_tag(user: StoredUser) -> str:
     return f"user:{user.id}"
+
+
+def get_user_by_email_or_404(email: str) -> StoredUser:
+    user = user_store.get_by_email(email)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found.",
+        )
+    return user
 
 
 def recall(user: StoredUser, query: str, types: Optional[List[str]] = None) -> List[dict[str, str]]:
@@ -486,7 +543,13 @@ def _local_chat_response(user: StoredUser, message: str) -> str:
 def reflect(user: StoredUser, query: str) -> str:
     if use_hindsight and client is not None:
         try:
-            result = client.reflect(bank_id=BANK_ID, query=query)
+            result = client.reflect(
+                bank_id=BANK_ID,
+                query=query,
+                budget="high",
+                tags=[get_user_tag(user)],
+                tags_match="any_strict",
+            )
             return result.text if hasattr(result, "text") else str(result)
         except Exception:
             pass
@@ -558,6 +621,116 @@ def logout(response: Response) -> dict[str, str]:
 @app.get("/api/auth/me")
 def current_user(current_user: StoredUser = Depends(get_current_user)) -> dict[str, Any]:
     return {"user": to_public_user(current_user).model_dump()}
+
+
+@app.get("/api/status")
+def runtime_status() -> dict[str, Any]:
+    return {
+        "app": "kelsa.ai",
+        "memory_mode": "hindsight" if use_hindsight and client is not None else "local",
+        "hindsight_enabled": bool(use_hindsight and client is not None),
+        "automation_enabled": bool(AUTOMATION_API_KEY),
+    }
+
+
+@app.post("/api/n8n/memory")
+def n8n_memory_upsert(
+    request: N8NMemoryUpsertInput,
+    _: AutomationActor = Depends(require_automation_api_key),
+) -> dict[str, Any]:
+    current_user = get_user_by_email_or_404(str(request.email))
+    kind = request.kind.strip().lower()
+    payload = request.payload
+
+    if kind == "skills":
+        skill = SkillInput(**payload)
+        return {
+            "kind": kind,
+            "result": add_skill(skill, current_user=current_user),
+            "user": to_public_user(current_user).model_dump(),
+        }
+    if kind == "projects":
+        project = ProjectInput(**payload)
+        return {
+            "kind": kind,
+            "result": add_project(project, current_user=current_user),
+            "user": to_public_user(current_user).model_dump(),
+        }
+    if kind == "applications":
+        application = ApplicationInput(**payload)
+        return {
+            "kind": kind,
+            "result": add_application(application, current_user=current_user),
+            "user": to_public_user(current_user).model_dump(),
+        }
+    if kind == "resume":
+        resume = ResumeInput(**payload)
+        return {
+            "kind": kind,
+            "result": analyze_resume(resume, current_user=current_user),
+            "user": to_public_user(current_user).model_dump(),
+        }
+    if kind == "chat":
+        chat_request = ChatInput(**payload)
+        return {
+            "kind": kind,
+            "result": chat(chat_request, current_user=current_user),
+            "user": to_public_user(current_user).model_dump(),
+        }
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Unsupported kind. Use skills, projects, applications, resume, or chat.",
+    )
+
+
+@app.post("/api/n8n/advisor")
+def n8n_advisor_prompt(
+    request: N8NAdvisorPromptInput,
+    _: AutomationActor = Depends(require_automation_api_key),
+) -> dict[str, Any]:
+    current_user = get_user_by_email_or_404(str(request.email))
+    result = chat(ChatInput(message=request.message), current_user=current_user)
+    return {
+        "user": to_public_user(current_user).model_dump(),
+        "response": result["response"],
+    }
+
+
+@app.post("/api/n8n/applications")
+def n8n_application_upsert(
+    request: N8NApplicationInput,
+    _: AutomationActor = Depends(require_automation_api_key),
+) -> dict[str, Any]:
+    current_user = get_user_by_email_or_404(str(request.email))
+    application = ApplicationInput(
+        company=request.company,
+        role=request.role,
+        status=request.status,
+        date_applied=request.date_applied,
+        notes=request.notes,
+    )
+    return {
+        "user": to_public_user(current_user).model_dump(),
+        "result": add_application(application, current_user=current_user),
+    }
+
+
+@app.post("/api/n8n/resume-analysis")
+def n8n_resume_analysis(
+    request: N8NResumeAnalysisInput,
+    _: AutomationActor = Depends(require_automation_api_key),
+) -> dict[str, Any]:
+    current_user = get_user_by_email_or_404(str(request.email))
+    resume = ResumeInput(
+        resume_text=request.resume_text,
+        target_role=request.target_role,
+    )
+    result = analyze_resume(resume, current_user=current_user)
+    return {
+        "user": to_public_user(current_user).model_dump(),
+        "analysis": result["analysis"],
+    }
 
 
 @app.post("/api/skills/add")
