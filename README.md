@@ -1,6 +1,6 @@
 # kelsa.ai
 
-AI Internship and Career Advisor built with FastAPI and a single-page frontend.
+kelsa.ai is a career copilot built with FastAPI and a single-page frontend.
 
 ## Run locally
 

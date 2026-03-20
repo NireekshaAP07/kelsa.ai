@@ -1,5 +1,5 @@
 """
-AI Internship & Career Advisor backend.
+kelsa.ai backend.
 
 Runs with Hindsight when available, and falls back to a lightweight
 local JSON memory store so the app still works in a plain local setup.
@@ -218,7 +218,7 @@ if HINDSIGHT_ENABLED and Hindsight is not None:
         use_hindsight = False
 
 
-app = FastAPI(title="AI Career Advisor")
+app = FastAPI(title="kelsa.ai")
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 session_serializer = URLSafeSerializer(SESSION_SECRET, salt="kelsa-session")
 
@@ -235,9 +235,9 @@ async def startup() -> None:
     try:
         client.create_bank(
             bank_id=BANK_ID,
-            name="Career Advisor",
+            name="kelsa.ai",
             mission=(
-                "You are a personalized AI career advisor for students and early-career professionals. "
+                "You are kelsa.ai, a personalized AI career copilot for students and early-career professionals. "
                 "Extract: skills learned with proficiency levels, projects built with tech stacks, "
                 "internship applications (company, role, status, date), interview outcomes, "
                 "certifications earned, goals stated by the user, feedback received on resume/profile. "
@@ -715,7 +715,7 @@ def chat(chat_input: ChatInput, current_user: StoredUser = Depends(get_current_u
     answer = reflect(
         current_user,
         f"The user asked: '{chat_input.message}'. "
-        "Answer as a knowledgeable career advisor who knows this user's full history — "
+        "Answer as kelsa.ai, a knowledgeable career copilot who knows this user's full history — "
         "their skills, projects, applications, and goals. Be specific and personal, not generic."
     )
     return {"response": answer}
