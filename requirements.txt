@@ -2,6 +2,8 @@ fastapi
 uvicorn[standard]
 hindsight-client
 python-multipart
+python-dotenv
+pydantic
 passlib[bcrypt]
 itsdangerous
 email-validator

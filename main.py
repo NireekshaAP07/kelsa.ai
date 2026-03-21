@@ -13,7 +13,7 @@ import os
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, List, Literal, Optional, cast
 
 from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Response, status
 from fastapi.responses import FileResponse
@@ -247,11 +247,25 @@ local_store = LocalMemoryStore(MEMORY_FILE)
 client = None
 use_hindsight = False
 
+
+def _normalize_samesite(value: str) -> Literal["lax", "strict", "none"]:
+    normalized = value.strip().lower()
+    if normalized == "lax":
+        return "lax"
+    if normalized == "strict":
+        return "strict"
+    if normalized == "none":
+        return "none"
+    return "lax"
+
+
+SESSION_COOKIE_SAMESITE_VALUE = _normalize_samesite(SESSION_COOKIE_SAMESITE)
+
 if HINDSIGHT_ENABLED and Hindsight is not None:
     try:
         client = Hindsight(
             base_url=HINDSIGHT_BASE_URL,
-            **({"api_key": HINDSIGHT_API_KEY} if HINDSIGHT_API_KEY else {}),
+            api_key=HINDSIGHT_API_KEY or None,
         )
         use_hindsight = True
     except Exception:
@@ -357,7 +371,7 @@ def set_session_cookie(response: Response, user_id: str) -> None:
         key=SESSION_COOKIE_NAME,
         value=create_session_token(user_id),
         httponly=True,
-        samesite=SESSION_COOKIE_SAMESITE,
+        samesite=SESSION_COOKIE_SAMESITE_VALUE,
         secure=SESSION_COOKIE_SECURE,
         max_age=SESSION_COOKIE_MAX_AGE,
     )
@@ -424,17 +438,24 @@ def get_user_by_email_or_404(email: str) -> StoredUser:
 def recall(user: StoredUser, query: str, types: Optional[List[str]] = None) -> List[dict[str, str]]:
     if use_hindsight and client is not None:
         try:
-            kwargs = dict(
-                bank_id=BANK_ID,
-                query=query,
-                tags=[get_user_tag(user)],
-                tags_match="any_strict",
-                budget="mid",
-            )
             if types:
-                kwargs["types"] = types
-            results = client.recall(**kwargs)
-            output = results.results if hasattr(results, "results") else results
+                results = client.recall(
+                    bank_id=BANK_ID,
+                    query=query,
+                    types=types,
+                    tags=[get_user_tag(user)],
+                    tags_match="any_strict",
+                    budget="mid",
+                )
+            else:
+                results = client.recall(
+                    bank_id=BANK_ID,
+                    query=query,
+                    tags=[get_user_tag(user)],
+                    tags_match="any_strict",
+                    budget="mid",
+                )
+            output = cast(list[Any], results.results if hasattr(results, "results") else results)
             return [
                 {"text": item.text, "type": getattr(item, "type", "fact")}
                 for item in output
