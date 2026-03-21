@@ -7,6 +7,7 @@ local JSON memory store so the app still works in a plain local setup.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import uuid
@@ -21,8 +22,6 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr, Field
 from dotenv import load_dotenv
 
-load_dotenv()
-
 try:
     from hindsight_client import Hindsight  # type: ignore
 except ImportError:
@@ -30,6 +29,8 @@ except ImportError:
 
 
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
+
 INDEX_FILE = BASE_DIR / "index.html"
 MEMORY_FILE = BASE_DIR / "memory_store.json"
 USERS_FILE = BASE_DIR / "users.json"
@@ -265,6 +266,8 @@ session_serializer = URLSafeSerializer(SESSION_SECRET, salt="kelsa-session")
 
 @app.on_event("startup")
 async def startup() -> None:
+    global use_hindsight, client
+
     if not INDEX_FILE.exists():
         raise RuntimeError(f"Missing frontend file: {INDEX_FILE}")
 
@@ -276,7 +279,8 @@ async def startup() -> None:
         return
 
     try:
-        client.create_bank(
+        await asyncio.to_thread(
+            client.create_bank,
             bank_id=BANK_ID,
             name="kelsa.ai",
             mission=(
@@ -290,25 +294,31 @@ async def startup() -> None:
         )
         print(f"Bank '{BANK_ID}' ready.")
     except Exception as exc:
-        print(f"Falling back to local store because Hindsight init failed: {exc}")
+        use_hindsight = False
+        client = None
+        error_text = str(exc)
+        print(f"Falling back to local store because Hindsight init failed: {error_text}")
+        if "CERTIFICATE_VERIFY_FAILED" in error_text or "unable to get local issuer certificate" in error_text:
+            print(
+                "Hindsight SSL trust failed. On macOS with python.org Python, run "
+                "'/Applications/Python 3.10/Install Certificates.command' and restart the server."
+            )
 
 
 def retain(content: str, context: str, tags: Optional[List[str]] = None, doc_id: Optional[str] = None) -> None:
-    item = {
-        "content": content,
-        "context": context,
-        "tags": tags or ["user:default"],
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-    }
-    if doc_id:
-        item["document_id"] = doc_id
-
     if use_hindsight and client is not None:
         try:
-            client.retain(bank_id=BANK_ID, items=[item])
+            client.retain(
+                bank_id=BANK_ID,
+                content=content,
+                context=context,
+                timestamp=datetime.utcnow(),
+                tags=tags or ["user:default"],
+                document_id=doc_id,
+            )
             return
-        except Exception:
-            pass
+        except Exception as exc:
+            print(f"Hindsight retain failed, using local fallback only: {exc}")
 
 
 def to_public_user(user: StoredUser) -> UserPublic:
@@ -429,8 +439,8 @@ def recall(user: StoredUser, query: str, types: Optional[List[str]] = None) -> L
                 {"text": item.text, "type": getattr(item, "type", "fact")}
                 for item in output
             ]
-        except Exception:
-            pass
+        except Exception as exc:
+            print(f"Hindsight recall failed, using local fallback: {exc}")
 
     snippets: list[dict[str, str]] = []
     for kind in ("skills", "projects", "applications", "resume", "chat"):
@@ -589,8 +599,8 @@ def reflect(user: StoredUser, query: str) -> str:
                 tags_match="any_strict",
             )
             return result.text if hasattr(result, "text") else str(result)
-        except Exception:
-            pass
+        except Exception as exc:
+            print(f"Hindsight reflect failed, using local fallback: {exc}")
 
     lowered = query.lower()
     if "career dashboard summary" in lowered:
@@ -667,6 +677,10 @@ def runtime_status() -> dict[str, Any]:
         "app": "kelsa.ai",
         "memory_mode": "hindsight" if use_hindsight and client is not None else "local",
         "hindsight_enabled": bool(use_hindsight and client is not None),
+        "hindsight_requested": HINDSIGHT_ENABLED,
+        "hindsight_client_installed": Hindsight is not None,
+        "hindsight_base_url": HINDSIGHT_BASE_URL,
+        "hindsight_has_api_key": bool(HINDSIGHT_API_KEY),
         "automation_enabled": bool(AUTOMATION_API_KEY),
     }
 
