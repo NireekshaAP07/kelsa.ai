@@ -382,6 +382,10 @@ If you plan to contribute:
 
 Please also read the [Code of Conduct](/home/sonukumar/Documents/projects/kelsa.ai/CODE_OF_CONDUCT.md).
 
+## License
+
+This project is licensed under the [MIT License](/home/sonukumar/Documents/projects/kelsa.ai/LICENSE).
+
 ## Additional documentation
 <!-- AUDIT: README should link contributors and license readers more explicitly from dedicated sections, not only this catch-all list. -->
 
