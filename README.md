@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/notysozu/kelsa.ai/actions/workflows/ci.yml/badge.svg)](https://github.com/notysozu/kelsa.ai/actions/workflows/ci.yml) ![Python](https://img.shields.io/badge/python-3.10%2B-blue) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) ![Last Commit](https://img.shields.io/github/last-commit/notysozu/kelsa.ai)
 
-Career copilot for students and early-career professionals who want one self-hosted place to track skills, applications, resume feedback, and next steps.
+Self-hosted career copilot and job search tracker for students and early-career professionals who want one place to manage skills, applications, resume feedback, and next steps.
 
-`kelsa.ai` is a FastAPI-based career copilot with a single-page frontend for students and early-career professionals. It helps users track skills, projects, applications, resume feedback, and personalized career guidance in one lightweight app.
+`kelsa.ai` is a FastAPI-based career copilot and resume analysis app with a single-page frontend for students and early-career professionals. It helps you track skills, projects, applications, resume feedback, and personalized career guidance in one lightweight self-hosted workflow.
 
 ## Overview
 
