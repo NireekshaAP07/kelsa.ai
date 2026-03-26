@@ -1,27 +1,92 @@
 # kelsa.ai
 
-kelsa.ai is a FastAPI-based career copilot with a single-page frontend. It supports:
+`kelsa.ai` is a FastAPI-based career copilot with a single-page frontend for students and early-career professionals. It helps users track skills, projects, applications, resume feedback, and personalized career guidance in one lightweight app.
+
+## Purpose
+
+The project aims to provide a simple, self-hostable career support tool that can run locally with JSON storage, while still supporting richer memory workflows through Hindsight when needed.
+
+## Goals
+
+- keep local setup simple
+- provide an opinionated but approachable career tracking workflow
+- support authenticated personal data without requiring a full frontend build pipeline
+- offer an upgrade path from local JSON storage to Hindsight-backed memory
+
+## Features
 
 - account signup and login
 - cookie-based sessions
 - per-user skills, projects, applications, resume analysis, dashboard, and chat
 - optional Hindsight-backed memory
 - local JSON-backed fallback memory when Hindsight is disabled
+- automation endpoints for n8n or similar machine-to-machine workflows
 
 ## Requirements
 
-- Python 3.11+ recommended
+- Python 3.10+ supported, 3.11+ recommended
 - `venv`
 - internet access only if you want to install dependencies or use Hindsight Cloud
 
+## One-command install
+
+The project now includes auditable install scripts for Linux, macOS, and Windows.
+
+Linux or macOS with `curl`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.sh | bash
+```
+
+Linux or macOS with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.sh | bash
+```
+
+Windows PowerShell:
+
+```powershell
+iwr https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.ps1 -UseBasicParsing | iex
+```
+
+Security note:
+
+- review pipe-to-shell scripts before running them
+- these installers are kept in-repo so they stay readable and auditable
+- the scripts generate local development secrets in `.env` and do not print them
+
+Behavior:
+
+- detects the current OS and package manager
+- installs Git and Python when missing
+- clones the repository if you are not already inside it
+- creates `.env` from `.env.example`
+- creates `.venv`, installs `requirements.txt`, and starts the app
+
+Useful overrides:
+
+```bash
+START_APP=0 curl -fsSL https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.sh | bash
+INSTALL_DIR="$HOME/apps/kelsa.ai" curl -fsSL https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.sh | bash
+INSTALL_UPDATE=1 ./install.sh
+```
+
+```powershell
+$env:START_APP="0"; iwr https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.ps1 -UseBasicParsing | iex
+$env:INSTALL_DIR="$HOME\apps\kelsa.ai"; iwr https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.ps1 -UseBasicParsing | iex
+```
+
 ## Project structure
 
-- [main.py](/home/sonukumar/Documents/projects/problem-statement-4/files/main.py): FastAPI backend and auth logic
-- [index.html](/home/sonukumar/Documents/projects/problem-statement-4/files/index.html): single-page frontend
-- [requirements.txt](/home/sonukumar/Documents/projects/problem-statement-4/files/requirements.txt): Python dependencies
-- [`.env.example`](/home/sonukumar/Documents/projects/problem-statement-4/files/.env.example): sample environment config
-- [DEPLOYMENT.md](/home/sonukumar/Documents/projects/problem-statement-4/files/DEPLOYMENT.md): deployment-focused notes
-- [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/problem-statement-4/files/N8N_INTEGRATION.md): machine-to-machine workflow guide for n8n
+- [main.py](/home/sonukumar/Documents/projects/kelsa.ai/main.py): FastAPI backend and auth logic
+- [index.html](/home/sonukumar/Documents/projects/kelsa.ai/index.html): single-page frontend
+- [requirements.txt](/home/sonukumar/Documents/projects/kelsa.ai/requirements.txt): Python dependencies
+- [`.env.example`](/home/sonukumar/Documents/projects/kelsa.ai/.env.example): sample environment config
+- [DEPLOYMENT.md](/home/sonukumar/Documents/projects/kelsa.ai/DEPLOYMENT.md): deployment-focused notes
+- [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/kelsa.ai/N8N_INTEGRATION.md): machine-to-machine workflow guide for n8n
+- [install.sh](/home/sonukumar/Documents/projects/kelsa.ai/install.sh): Linux and macOS bootstrap script
+- [install.ps1](/home/sonukumar/Documents/projects/kelsa.ai/install.ps1): Windows bootstrap script
 - `users.json`: local user store created at runtime
 - `memory_store.json`: local per-user memory store created at runtime
 
@@ -83,6 +148,17 @@ python -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
+Manual fallback if you do not want to use the one-command installers:
+
+```bash
+git clone https://github.com/notysozu/kelsa.ai
+cd kelsa.ai
+cp .env.example .env
+python -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install -r requirements.txt
+```
+
 ## Run locally
 
 Start the app:
@@ -131,7 +207,7 @@ The app also supports machine-to-machine automation without browser cookies.
 - Use `POST /api/n8n/resume-analysis` for direct resume review
 - Use `POST /api/n8n/advisor` to send a prompt and get an advisor response for that user
 
-See [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/problem-statement-4/files/N8N_INTEGRATION.md) for example payloads and suggested workflow patterns.
+See [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/kelsa.ai/N8N_INTEGRATION.md) for example payloads and suggested workflow patterns.
 
 ## Data storage
 
@@ -206,7 +282,7 @@ For larger production use, move user and memory persistence to a database.
 
 ### Session cookies
 
-The app currently uses signed cookies for sessions. For real production deployment, review cookie security settings in [main.py](/home/sonukumar/Documents/projects/problem-statement-4/files/main.py), especially if you are serving over HTTPS and want stricter cookie behavior.
+The app currently uses signed cookies for sessions. For real production deployment, review cookie security settings in [main.py](/home/sonukumar/Documents/projects/kelsa.ai/main.py), especially if you are serving over HTTPS and want stricter cookie behavior.
 
 ### Hindsight in production
 
@@ -252,3 +328,37 @@ Check:
 - JSON-backed storage is fine for demos but not ideal for large-scale production
 - full browser-based automated end-to-end tests are not included
 - session cookie behavior may need stricter production hardening depending on deployment setup
+
+## Usage example
+
+1. Start the app locally.
+2. Open `http://127.0.0.1:8090`.
+3. Create an account from the `Account` screen.
+4. Add a few skills, projects, or applications.
+5. Open the dashboard and advisor views to see the personalized summaries.
+
+Screenshot placeholders:
+
+- `docs/screenshots/dashboard.png`
+- `docs/screenshots/account.png`
+
+## Tech stack
+
+- Python
+- FastAPI
+- Uvicorn
+- Pydantic
+- Passlib
+- HTML, CSS, and vanilla JavaScript
+- Optional Hindsight integration
+
+## Project status
+
+Current status: active prototype suitable for demos, internal tools, and incremental hardening.
+
+## Additional documentation
+
+- [DEPLOYMENT.md](/home/sonukumar/Documents/projects/kelsa.ai/DEPLOYMENT.md)
+- [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/kelsa.ai/N8N_INTEGRATION.md)
+- [CONTRIBUTING.md](/home/sonukumar/Documents/projects/kelsa.ai/CONTRIBUTING.md)
+- [SECURITY.md](/home/sonukumar/Documents/projects/kelsa.ai/SECURITY.md)
