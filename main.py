@@ -11,7 +11,7 @@ import asyncio
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, List, Literal, Optional, cast
 
@@ -48,6 +48,14 @@ SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "lax").lower()
 SESSION_COOKIE_MAX_AGE = int(os.getenv("SESSION_COOKIE_MAX_AGE", str(60 * 60 * 24 * 7)))
 AUTOMATION_API_KEY = os.getenv("AUTOMATION_API_KEY", "")
 BANK_ID = "career-advisor-bank"
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def utc_now_iso() -> str:
+    return utc_now().isoformat().replace("+00:00", "Z")
 
 
 class SkillInput(BaseModel):
@@ -183,7 +191,7 @@ class LocalUserStore:
             name=name.strip(),
             email=email.strip().lower(),
             hashed_password=hashed_password,
-            created_at=datetime.utcnow().isoformat() + "Z",
+            created_at=utc_now_iso(),
         )
         self.data.setdefault("users", []).append(user.model_dump())
         self._save()
@@ -226,7 +234,7 @@ class LocalMemoryStore:
             {
                 **payload,
                 "user_id": user_id,
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": utc_now_iso(),
             }
         )
         self._save()
@@ -326,7 +334,7 @@ def retain(content: str, context: str, tags: Optional[List[str]] = None, doc_id:
                 bank_id=BANK_ID,
                 content=content,
                 context=context,
-                timestamp=datetime.utcnow(),
+                timestamp=utc_now(),
                 tags=tags or ["user:default"],
                 document_id=doc_id,
             )
