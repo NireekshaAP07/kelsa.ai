@@ -370,6 +370,18 @@ Current status: active prototype suitable for demos, internal tools, and increme
 - [ ] Expand automated tests beyond the current core route and auth coverage
 - [ ] Move startup handling from event hooks to FastAPI lifespan handlers
 
+## Contributing
+
+Contributions are welcome. Start with [CONTRIBUTING.md](/home/sonukumar/Documents/projects/kelsa.ai/CONTRIBUTING.md) for local setup, testing expectations, and Conventional Commit guidance.
+
+If you plan to contribute:
+
+- open an issue or discussion if you want to sanity-check a change before implementing it
+- fork the repository, create a focused branch, and open a pull request with a short testing summary
+- run `.venv/bin/pytest` before submitting your PR
+
+Please also read the [Code of Conduct](/home/sonukumar/Documents/projects/kelsa.ai/CODE_OF_CONDUCT.md).
+
 ## Additional documentation
 <!-- AUDIT: README should link contributors and license readers more explicitly from dedicated sections, not only this catch-all list. -->
 
