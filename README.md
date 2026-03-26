@@ -128,36 +128,25 @@ Expected result: a JSON response showing the app name, memory mode, and whether 
 ## Configuration
 <!-- AUDIT: Configuration is useful but would be easier to scan as a table with required vs optional values. -->
 
-Copy the example config first:
+Start from the example config:
 
 ```bash
 cp .env.example .env
 ```
 
-Available environment variables:
-
-- `SESSION_SECRET`
-  Used to sign login session cookies. Set this to a long random secret in any non-demo environment.
-- `APP_HOST`
-  Host for the built-in server entrypoint.
-- `APP_PORT`
-  Port for the built-in server entrypoint.
-- `APP_RELOAD`
-  Enables reload mode when running through `python main.py`.
-- `SESSION_COOKIE_SECURE`
-  Set to `true` behind HTTPS in production.
-- `SESSION_COOKIE_SAMESITE`
-  Cookie same-site policy. Default is `lax`.
-- `SESSION_COOKIE_MAX_AGE`
-  Session cookie lifetime in seconds.
-- `AUTOMATION_API_KEY`
-  Shared secret for machine-to-machine requests such as n8n.
-- `HINDSIGHT_ENABLED`
-  Set to `true` to enable Hindsight. Default behavior is local JSON fallback mode.
-- `HINDSIGHT_BASE_URL`
-  Hindsight API base URL.
-- `HINDSIGHT_API_KEY`
-  Hindsight API key. Leave blank when Hindsight is disabled.
+| Variable | Default | Required | Description |
+| --- | --- | --- | --- |
+| `SESSION_SECRET` | `replace-this-with-a-long-random-secret` | Yes for non-demo deployments | Signs login session cookies. Replace the placeholder before any shared or production use. |
+| `APP_HOST` | `0.0.0.0` | No | Host used by `python main.py` or the built-in server entrypoint. |
+| `APP_PORT` | `8090` | No | Port used by the built-in server entrypoint. |
+| `APP_RELOAD` | `false` | No | Enables reload mode when you run the app through `python main.py`. |
+| `SESSION_COOKIE_SECURE` | `false` | No | Set to `true` when you serve the app behind HTTPS. |
+| `SESSION_COOKIE_SAMESITE` | `lax` | No | Same-site policy for the session cookie. |
+| `SESSION_COOKIE_MAX_AGE` | `604800` | No | Session cookie lifetime in seconds. |
+| `AUTOMATION_API_KEY` | `replace-with-a-shared-secret-for-n8n` | Optional | Shared secret for machine-to-machine requests such as n8n workflows. |
+| `HINDSIGHT_ENABLED` | `false` | No | Enables Hindsight-backed memory instead of the local JSON fallback mode. |
+| `HINDSIGHT_BASE_URL` | `https://api.hindsight.vectorize.io` | Only when Hindsight is enabled | Base URL for the Hindsight API. |
+| `HINDSIGHT_API_KEY` | empty | Only when Hindsight is enabled | API key for the Hindsight service. |
 
 Example `.env`:
 
