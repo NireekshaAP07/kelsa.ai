@@ -22,12 +22,14 @@ Career copilot for students and early-career professionals who want to track ski
 - Switch to Hindsight-backed memory when you need richer recall and reflection across user history.
 - Send structured updates from n8n or similar automation tools without relying on browser cookies.
 
-## Requirements
+## Prerequisites
 <!-- AUDIT: This should become a clearer prerequisites section with installation links and exact tooling expectations. -->
 
-- Python 3.10+ supported, 3.11+ recommended
-- `venv`
-- internet access only if you want to install dependencies or use Hindsight Cloud
+- [Python](https://www.python.org/downloads/) 3.10 or newer. Python 3.11 is the recommended local development target.
+- `venv`, which ships with standard Python installations on most platforms.
+- [Git](https://git-scm.com/downloads) if you plan to clone the repository or use the one-command installers.
+- `curl` or `wget` for the optional Linux and macOS one-command installer flow.
+- Internet access if you need to install dependencies or connect to Hindsight Cloud.
 
 ## One-command install
 <!-- AUDIT: Installation flow should include a manual end-to-end path, a verification step, and a clearer separation from usage. -->
