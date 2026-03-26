@@ -114,16 +114,23 @@ Expected result: a JSON response showing the app name, memory mode, and whether 
 
 ## Project structure
 
-- [main.py](/home/sonukumar/Documents/projects/kelsa.ai/main.py): FastAPI backend and auth logic
-- [index.html](/home/sonukumar/Documents/projects/kelsa.ai/index.html): single-page frontend
-- [requirements.txt](/home/sonukumar/Documents/projects/kelsa.ai/requirements.txt): Python dependencies
-- [`.env.example`](/home/sonukumar/Documents/projects/kelsa.ai/.env.example): sample environment config
-- [DEPLOYMENT.md](/home/sonukumar/Documents/projects/kelsa.ai/DEPLOYMENT.md): deployment-focused notes
-- [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/kelsa.ai/N8N_INTEGRATION.md): machine-to-machine workflow guide for n8n
-- [install.sh](/home/sonukumar/Documents/projects/kelsa.ai/install.sh): Linux and macOS bootstrap script
-- [install.ps1](/home/sonukumar/Documents/projects/kelsa.ai/install.ps1): Windows bootstrap script
-- `users.json`: local user store created at runtime
-- `memory_store.json`: local per-user memory store created at runtime
+```text
+.
+├── .github/
+│   └── workflows/      # GitHub Actions CI definitions
+├── tests/              # Pytest coverage for core app behavior
+├── main.py             # FastAPI app, auth flow, API routes, and local storage logic
+├── index.html          # Single-page frontend served directly by FastAPI
+├── requirements.txt    # Runtime Python dependencies
+├── requirements-dev.txt# Developer-only dependencies such as pytest
+├── .env.example        # Sample environment variables for local and production setup
+├── install.sh          # Linux and macOS bootstrap installer
+├── install.ps1         # Windows PowerShell bootstrap installer
+├── DEPLOYMENT.md       # Deployment-specific guidance
+└── N8N_INTEGRATION.md  # n8n payload examples and machine-to-machine workflow notes
+```
+
+Runtime data files such as `users.json` and `memory_store.json` are created locally when the app runs in JSON-backed mode.
 
 ## Configuration
 <!-- AUDIT: Configuration is useful but would be easier to scan as a table with required vs optional values. -->
