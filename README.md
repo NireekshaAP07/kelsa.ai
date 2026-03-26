@@ -2,13 +2,13 @@
 
 [![CI](https://github.com/notysozu/kelsa.ai/actions/workflows/ci.yml/badge.svg)](https://github.com/notysozu/kelsa.ai/actions/workflows/ci.yml) ![Python](https://img.shields.io/badge/python-3.10%2B-blue) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) ![Last Commit](https://img.shields.io/github/last-commit/notysozu/kelsa.ai)
 
-Career copilot for students and early-career professionals who want to track skills, applications, resume feedback, and next steps in one self-hosted FastAPI app.
+Career copilot for students and early-career professionals who want one self-hosted place to track skills, applications, resume feedback, and next steps.
 
 `kelsa.ai` is a FastAPI-based career copilot with a single-page frontend for students and early-career professionals. It helps users track skills, projects, applications, resume feedback, and personalized career guidance in one lightweight app.
 
 ## Overview
 
-`kelsa.ai` helps students and early-career professionals organize the information they need for a job search, including skills, projects, applications, resume notes, and advisor conversations. It is built for people who want a lightweight career copilot they can run locally without setting up a separate frontend build system or database on day one. The project exists to make personal career tracking easier to start in a local JSON-backed setup while still leaving room for Hindsight-backed memory when workflows grow more advanced. Its main distinction is that it combines browser-based account flows, structured career records, and automation-friendly endpoints in a small self-hosted FastAPI app.
+`kelsa.ai` helps students and early-career professionals organize job-search information such as skills, projects, applications, resume notes, and advisor conversations. It is for people who want a lightweight career copilot they can run locally without setting up a separate frontend build system or database on day one. The project makes personal career tracking easy to start with local JSON storage while leaving room for Hindsight-backed memory as your workflow becomes more advanced. It stands out by combining browser-based account flows, structured career records, and automation-friendly endpoints in a small self-hosted FastAPI app.
 
 ## Features
 
@@ -29,7 +29,7 @@ Career copilot for students and early-career professionals who want to track ski
 
 ## Installation
 
-Choose either the automated installer or the manual setup path below.
+Choose the automated installer or the manual setup path below.
 
 ### Option 1: one-command install
 
@@ -105,7 +105,7 @@ Verify the app responds:
 curl -s http://127.0.0.1:8090/api/status
 ```
 
-Expected result: a JSON response showing the app name, memory mode, and whether automation or Hindsight are enabled.
+You should see a JSON response that includes the app name, memory mode, and whether automation or Hindsight are enabled.
 
 ## Project structure
 
@@ -246,7 +246,7 @@ When `HINDSIGHT_ENABLED=true` and valid Hindsight credentials are provided:
 
 ## Production guidance
 
-This project is deployable, but in its current form it is best suited for demos, prototypes, or small internal use. Before serious production use, review the following carefully.
+You can deploy this project, but in its current form it is best suited to demos, prototypes, or small internal use. Before you put it into heavier production use, review the following points carefully.
 
 ### Minimum production checklist
 
@@ -282,7 +282,7 @@ Current persistence uses JSON files:
 - `users.json`
 - `memory_store.json`
 
-This is simple and works for local deployments, but it has tradeoffs:
+This approach works well for local deployments, but it has tradeoffs:
 
 - not ideal for concurrent multi-process writes
 - not ideal for horizontal scaling
