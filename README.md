@@ -1,6 +1,8 @@
 # kelsa.ai
+<!-- AUDIT: Header lacks badges and a sharper one-line positioning statement for quick scanning. -->
 
 `kelsa.ai` is a FastAPI-based career copilot with a single-page frontend for students and early-career professionals. It helps users track skills, projects, applications, resume feedback, and personalized career guidance in one lightweight app.
+<!-- AUDIT: Overview is split across Purpose and Goals, which weakens the opening narrative for first-time readers. -->
 
 ## Purpose
 
@@ -14,6 +16,7 @@ The project aims to provide a simple, self-hostable career support tool that can
 - offer an upgrade path from local JSON storage to Hindsight-backed memory
 
 ## Features
+<!-- AUDIT: Features are accurate but implementation-leaning rather than benefit-driven. -->
 
 - account signup and login
 - cookie-based sessions
@@ -23,12 +26,14 @@ The project aims to provide a simple, self-hostable career support tool that can
 - automation endpoints for n8n or similar machine-to-machine workflows
 
 ## Requirements
+<!-- AUDIT: This should become a clearer prerequisites section with installation links and exact tooling expectations. -->
 
 - Python 3.10+ supported, 3.11+ recommended
 - `venv`
 - internet access only if you want to install dependencies or use Hindsight Cloud
 
 ## One-command install
+<!-- AUDIT: Installation flow should include a manual end-to-end path, a verification step, and a clearer separation from usage. -->
 
 The project now includes auditable install scripts for Linux, macOS, and Windows.
 
@@ -91,6 +96,7 @@ $env:INSTALL_DIR="$HOME\apps\kelsa.ai"; iwr https://raw.githubusercontent.com/no
 - `memory_store.json`: local per-user memory store created at runtime
 
 ## Configuration
+<!-- AUDIT: Configuration is useful but would be easier to scan as a table with required vs optional values. -->
 
 Copy the example config first:
 
@@ -353,10 +359,12 @@ Screenshot placeholders:
 - Optional Hindsight integration
 
 ## Project status
+<!-- AUDIT: Status exists, but there is no roadmap section showing current limitations and next steps. -->
 
 Current status: active prototype suitable for demos, internal tools, and incremental hardening.
 
 ## Additional documentation
+<!-- AUDIT: README should link contributors and license readers more explicitly from dedicated sections, not only this catch-all list. -->
 
 - [DEPLOYMENT.md](/home/sonukumar/Documents/projects/kelsa.ai/DEPLOYMENT.md)
 - [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/kelsa.ai/N8N_INTEGRATION.md)
