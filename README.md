@@ -31,10 +31,14 @@ Career copilot for students and early-career professionals who want to track ski
 - `curl` or `wget` for the optional Linux and macOS one-command installer flow.
 - Internet access if you need to install dependencies or connect to Hindsight Cloud.
 
-## One-command install
+## Installation
 <!-- AUDIT: Installation flow should include a manual end-to-end path, a verification step, and a clearer separation from usage. -->
 
-The project now includes auditable install scripts for Linux, macOS, and Windows.
+Choose either the automated installer or the manual setup path below.
+
+### Option 1: one-command install
+
+The project includes auditable install scripts for Linux, macOS, and Windows.
 
 Linux or macOS with `curl`:
 
@@ -54,13 +58,13 @@ Windows PowerShell:
 iwr https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.ps1 -UseBasicParsing | iex
 ```
 
-Security note:
+Security notes:
 
 - review pipe-to-shell scripts before running them
 - these installers are kept in-repo so they stay readable and auditable
 - the scripts generate local development secrets in `.env` and do not print them
 
-Behavior:
+Installer behavior:
 
 - detects the current OS and package manager
 - installs Git and Python when missing
@@ -80,6 +84,33 @@ INSTALL_UPDATE=1 ./install.sh
 $env:START_APP="0"; iwr https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.ps1 -UseBasicParsing | iex
 $env:INSTALL_DIR="$HOME\apps\kelsa.ai"; iwr https://raw.githubusercontent.com/notysozu/kelsa.ai/main/install.ps1 -UseBasicParsing | iex
 ```
+
+### Option 2: manual setup
+
+Clone the repository and create a local environment:
+
+```bash
+git clone https://github.com/notysozu/kelsa.ai
+cd kelsa.ai
+cp .env.example .env
+python -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install -r requirements.txt -r requirements-dev.txt
+```
+
+Start the app locally:
+
+```bash
+.venv/bin/python -m uvicorn main:app --reload --port 8090
+```
+
+Verify the app responds:
+
+```bash
+curl -s http://127.0.0.1:8090/api/status
+```
+
+Expected result: a JSON response showing the app name, memory mode, and whether automation or Hindsight are enabled.
 
 ## Project structure
 
@@ -142,40 +173,6 @@ AUTOMATION_API_KEY=replace-with-a-shared-secret-for-n8n
 HINDSIGHT_ENABLED=false
 HINDSIGHT_BASE_URL=https://api.hindsight.vectorize.io
 HINDSIGHT_API_KEY=
-```
-
-## Local setup
-
-Create a virtual environment and install dependencies:
-
-```bash
-python -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-```
-
-Manual fallback if you do not want to use the one-command installers:
-
-```bash
-git clone https://github.com/notysozu/kelsa.ai
-cd kelsa.ai
-cp .env.example .env
-python -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -r requirements.txt
-```
-
-## Run locally
-
-Start the app:
-
-```bash
-.venv/bin/python -m uvicorn main:app --reload --port 8090
-```
-
-Open:
-
-```text
-http://127.0.0.1:8090
 ```
 
 ## How to use the app
