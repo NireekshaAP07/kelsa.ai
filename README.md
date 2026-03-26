@@ -361,6 +361,15 @@ Check:
 
 Current status: active prototype suitable for demos, internal tools, and incremental hardening.
 
+## Roadmap
+
+- [x] Browser-based account flow for personal career tracking
+- [x] Local JSON-backed storage with optional Hindsight support
+- [x] n8n-compatible endpoints for machine-to-machine automation
+- [ ] Replace JSON persistence with a more production-ready database backend
+- [ ] Expand automated tests beyond the current core route and auth coverage
+- [ ] Move startup handling from event hooks to FastAPI lifespan handlers
+
 ## Additional documentation
 <!-- AUDIT: README should link contributors and license readers more explicitly from dedicated sections, not only this catch-all list. -->
 
