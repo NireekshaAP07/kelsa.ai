@@ -340,13 +340,14 @@ Check:
 
 ## Tech stack
 
-- Python
-- FastAPI
-- Uvicorn
-- Pydantic
-- Passlib
-- HTML, CSS, and vanilla JavaScript
-- Optional Hindsight integration
+| Area | Tools |
+| --- | --- |
+| Language and runtime | Python 3.10+ |
+| Backend framework | FastAPI, Uvicorn |
+| Validation and auth helpers | Pydantic, Passlib, ItsDangerous, `email-validator` |
+| Frontend | Single `index.html` file with inline HTML, CSS, and vanilla JavaScript |
+| Storage | Local JSON files by default, optional Hindsight-backed memory |
+| Developer tooling | Pytest, GitHub Actions CI, cross-platform install scripts |
 
 ## Project status
 <!-- AUDIT: Status exists, but there is no roadmap section showing current limitations and next steps. -->
