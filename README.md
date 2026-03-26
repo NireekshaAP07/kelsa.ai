@@ -15,12 +15,12 @@ Career copilot for students and early-career professionals who want to track ski
 ## Features
 <!-- AUDIT: Features are accurate but implementation-leaning rather than benefit-driven. -->
 
-- account signup and login
-- cookie-based sessions
-- per-user skills, projects, applications, resume analysis, dashboard, and chat
-- optional Hindsight-backed memory
-- local JSON-backed fallback memory when Hindsight is disabled
-- automation endpoints for n8n or similar machine-to-machine workflows
+- Sign in through a browser-based account flow and keep each user's records isolated with signed sessions.
+- Track skills, projects, applications, resume analysis, dashboard summaries, and advisor chats in one place.
+- Review your job-search progress without stitching together separate spreadsheets, notes, and prompts.
+- Start with local JSON-backed storage for simple self-hosted setups and internal demos.
+- Switch to Hindsight-backed memory when you need richer recall and reflection across user history.
+- Send structured updates from n8n or similar automation tools without relying on browser cookies.
 
 ## Requirements
 <!-- AUDIT: This should become a clearer prerequisites section with installation links and exact tooling expectations. -->
