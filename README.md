@@ -8,16 +8,9 @@ Career copilot for students and early-career professionals who want to track ski
 `kelsa.ai` is a FastAPI-based career copilot with a single-page frontend for students and early-career professionals. It helps users track skills, projects, applications, resume feedback, and personalized career guidance in one lightweight app.
 <!-- AUDIT: Overview is split across Purpose and Goals, which weakens the opening narrative for first-time readers. -->
 
-## Purpose
+## Overview
 
-The project aims to provide a simple, self-hostable career support tool that can run locally with JSON storage, while still supporting richer memory workflows through Hindsight when needed.
-
-## Goals
-
-- keep local setup simple
-- provide an opinionated but approachable career tracking workflow
-- support authenticated personal data without requiring a full frontend build pipeline
-- offer an upgrade path from local JSON storage to Hindsight-backed memory
+`kelsa.ai` helps students and early-career professionals organize the information they need for a job search, including skills, projects, applications, resume notes, and advisor conversations. It is built for people who want a lightweight career copilot they can run locally without setting up a separate frontend build system or database on day one. The project exists to make personal career tracking easier to start in a local JSON-backed setup while still leaving room for Hindsight-backed memory when workflows grow more advanced. Its main distinction is that it combines browser-based account flows, structured career records, and automation-friendly endpoints in a small self-hosted FastAPI app.
 
 ## Features
 <!-- AUDIT: Features are accurate but implementation-leaning rather than benefit-driven. -->
