@@ -175,19 +175,37 @@ HINDSIGHT_BASE_URL=https://api.hindsight.vectorize.io
 HINDSIGHT_API_KEY=
 ```
 
-## How to use the app
+## Usage
 
-1. Open the app in your browser.
-2. Go to the `Account` screen.
-3. Create a new account or log in with an existing one.
-4. After login, use the sidebar to access:
-   - Dashboard
-   - Skills
-   - Projects
-   - Applications
-   - Resume Analysis
-   - AI Advisor
-5. Add your data and the app will keep it scoped to your logged-in account.
+### Basic browser workflow
+
+1. Start the app locally.
+2. Open `http://127.0.0.1:8090` in your browser.
+3. Create an account from the `Account` view or log in with an existing account.
+4. Use the sidebar to add skills, projects, applications, resume text, and advisor prompts.
+5. Return to the dashboard to review a concise summary of what the app has stored for your account.
+
+### Automation example with n8n-compatible endpoints
+
+After setting `AUTOMATION_API_KEY` in your `.env`, you can send structured application updates without a browser session:
+
+```bash
+curl -X POST http://127.0.0.1:8090/api/n8n/applications \
+  -H "Content-Type: application/json" \
+  -H "X-Automation-Key: replace-with-a-shared-secret-for-n8n" \
+  -d '{
+    "email": "user@example.com",
+    "company": "Stripe",
+    "role": "Backend Intern",
+    "status": "applied",
+    "date_applied": "2026-03-20",
+    "notes": "Submitted through careers page"
+  }'
+```
+
+See [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/kelsa.ai/N8N_INTEGRATION.md) for more payload examples and workflow prompts.
+
+<!-- TODO: add demo GIF or screenshots for the dashboard and account flow -->
 
 ## Auth behavior
 
@@ -330,19 +348,6 @@ Check:
 - JSON-backed storage is fine for demos but not ideal for large-scale production
 - full browser-based automated end-to-end tests are not included
 - session cookie behavior may need stricter production hardening depending on deployment setup
-
-## Usage example
-
-1. Start the app locally.
-2. Open `http://127.0.0.1:8090`.
-3. Create an account from the `Account` screen.
-4. Add a few skills, projects, or applications.
-5. Open the dashboard and advisor views to see the personalized summaries.
-
-Screenshot placeholders:
-
-- `docs/screenshots/dashboard.png`
-- `docs/screenshots/account.png`
 
 ## Tech stack
 
