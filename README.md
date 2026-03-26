@@ -1,19 +1,16 @@
 # kelsa.ai
-<!-- AUDIT: Header lacks badges and a sharper one-line positioning statement for quick scanning. -->
 
 [![CI](https://github.com/notysozu/kelsa.ai/actions/workflows/ci.yml/badge.svg)](https://github.com/notysozu/kelsa.ai/actions/workflows/ci.yml) ![Python](https://img.shields.io/badge/python-3.10%2B-blue) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) ![Last Commit](https://img.shields.io/github/last-commit/notysozu/kelsa.ai)
 
 Career copilot for students and early-career professionals who want to track skills, applications, resume feedback, and next steps in one self-hosted FastAPI app.
 
 `kelsa.ai` is a FastAPI-based career copilot with a single-page frontend for students and early-career professionals. It helps users track skills, projects, applications, resume feedback, and personalized career guidance in one lightweight app.
-<!-- AUDIT: Overview is split across Purpose and Goals, which weakens the opening narrative for first-time readers. -->
 
 ## Overview
 
 `kelsa.ai` helps students and early-career professionals organize the information they need for a job search, including skills, projects, applications, resume notes, and advisor conversations. It is built for people who want a lightweight career copilot they can run locally without setting up a separate frontend build system or database on day one. The project exists to make personal career tracking easier to start in a local JSON-backed setup while still leaving room for Hindsight-backed memory when workflows grow more advanced. Its main distinction is that it combines browser-based account flows, structured career records, and automation-friendly endpoints in a small self-hosted FastAPI app.
 
 ## Features
-<!-- AUDIT: Features are accurate but implementation-leaning rather than benefit-driven. -->
 
 - Sign in through a browser-based account flow and keep each user's records isolated with signed sessions.
 - Track skills, projects, applications, resume analysis, dashboard summaries, and advisor chats in one place.
@@ -23,7 +20,6 @@ Career copilot for students and early-career professionals who want to track ski
 - Send structured updates from n8n or similar automation tools without relying on browser cookies.
 
 ## Prerequisites
-<!-- AUDIT: This should become a clearer prerequisites section with installation links and exact tooling expectations. -->
 
 - [Python](https://www.python.org/downloads/) 3.10 or newer. Python 3.11 is the recommended local development target.
 - `venv`, which ships with standard Python installations on most platforms.
@@ -32,7 +28,6 @@ Career copilot for students and early-career professionals who want to track ski
 - Internet access if you need to install dependencies or connect to Hindsight Cloud.
 
 ## Installation
-<!-- AUDIT: Installation flow should include a manual end-to-end path, a verification step, and a clearer separation from usage. -->
 
 Choose either the automated installer or the manual setup path below.
 
@@ -133,7 +128,6 @@ Expected result: a JSON response showing the app name, memory mode, and whether 
 Runtime data files such as `users.json` and `memory_store.json` are created locally when the app runs in JSON-backed mode.
 
 ## Configuration
-<!-- AUDIT: Configuration is useful but would be easier to scan as a table with required vs optional values. -->
 
 Start from the example config:
 
@@ -199,7 +193,7 @@ curl -X POST http://127.0.0.1:8090/api/n8n/applications \
   }'
 ```
 
-See [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/kelsa.ai/N8N_INTEGRATION.md) for more payload examples and workflow prompts.
+See [N8N_INTEGRATION.md](N8N_INTEGRATION.md) for more payload examples and workflow prompts.
 
 <!-- TODO: add demo GIF or screenshots for the dashboard and account flow -->
 
@@ -223,7 +217,7 @@ The app also supports machine-to-machine automation without browser cookies.
 - Use `POST /api/n8n/resume-analysis` for direct resume review
 - Use `POST /api/n8n/advisor` to send a prompt and get an advisor response for that user
 
-See [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/kelsa.ai/N8N_INTEGRATION.md) for example payloads and suggested workflow patterns.
+See [N8N_INTEGRATION.md](N8N_INTEGRATION.md) for example payloads and suggested workflow patterns.
 
 ## Data storage
 
@@ -271,7 +265,7 @@ Use a non-reload command:
 .venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8090
 ```
 
-You can also see [DEPLOYMENT.md](/home/sonukumar/Documents/projects/problem-statement-4/files/DEPLOYMENT.md) for a shorter deployment-specific checklist.
+You can also see [DEPLOYMENT.md](DEPLOYMENT.md) for a shorter deployment-specific checklist.
 
 ### Reverse proxy
 
@@ -298,7 +292,7 @@ For larger production use, move user and memory persistence to a database.
 
 ### Session cookies
 
-The app currently uses signed cookies for sessions. For real production deployment, review cookie security settings in [main.py](/home/sonukumar/Documents/projects/kelsa.ai/main.py), especially if you are serving over HTTPS and want stricter cookie behavior.
+The app currently uses signed cookies for sessions. For real production deployment, review cookie security settings in [main.py](main.py), especially if you are serving over HTTPS and want stricter cookie behavior.
 
 ### Hindsight in production
 
@@ -357,7 +351,6 @@ Check:
 | Developer tooling | Pytest, GitHub Actions CI, cross-platform install scripts |
 
 ## Project status
-<!-- AUDIT: Status exists, but there is no roadmap section showing current limitations and next steps. -->
 
 Current status: active prototype suitable for demos, internal tools, and incremental hardening.
 
@@ -372,7 +365,7 @@ Current status: active prototype suitable for demos, internal tools, and increme
 
 ## Contributing
 
-Contributions are welcome. Start with [CONTRIBUTING.md](/home/sonukumar/Documents/projects/kelsa.ai/CONTRIBUTING.md) for local setup, testing expectations, and Conventional Commit guidance.
+Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) for local setup, testing expectations, and Conventional Commit guidance.
 
 If you plan to contribute:
 
@@ -380,16 +373,15 @@ If you plan to contribute:
 - fork the repository, create a focused branch, and open a pull request with a short testing summary
 - run `.venv/bin/pytest` before submitting your PR
 
-Please also read the [Code of Conduct](/home/sonukumar/Documents/projects/kelsa.ai/CODE_OF_CONDUCT.md).
+Please also read the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-This project is licensed under the [MIT License](/home/sonukumar/Documents/projects/kelsa.ai/LICENSE).
+This project is licensed under the [MIT License](LICENSE).
 
 ## Additional documentation
-<!-- AUDIT: README should link contributors and license readers more explicitly from dedicated sections, not only this catch-all list. -->
 
-- [DEPLOYMENT.md](/home/sonukumar/Documents/projects/kelsa.ai/DEPLOYMENT.md)
-- [N8N_INTEGRATION.md](/home/sonukumar/Documents/projects/kelsa.ai/N8N_INTEGRATION.md)
-- [CONTRIBUTING.md](/home/sonukumar/Documents/projects/kelsa.ai/CONTRIBUTING.md)
-- [SECURITY.md](/home/sonukumar/Documents/projects/kelsa.ai/SECURITY.md)
+- [DEPLOYMENT.md](DEPLOYMENT.md)
+- [N8N_INTEGRATION.md](N8N_INTEGRATION.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [SECURITY.md](SECURITY.md)
